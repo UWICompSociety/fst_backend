@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+
+
 class TestModel(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -8,16 +10,18 @@ class TestModel(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+
 DEPARTMENT = [
-        ("BIOCHEM", "Biochemistry Section"),
-        ("CHEM", "Chemistry"),
-        ("COMP", "Computing"),
-        ("GEO", "Geography and Geology"),
-        ("LIFE", "Life Sciences"),
-        ("MATH", "Mathematics"),
-        ("PHYS", "Physics"),
-        ("OTHER", "Other"),
-    ]
+    ("BIOCHEM", "Biochemistry Section"),
+    ("CHEM", "Chemistry"),
+    ("COMP", "Computing"),
+    ("GEO", "Geography and Geology"),
+    ("LIFE", "Life Sciences"),
+    ("MATH", "Mathematics"),
+    ("PHYS", "Physics"),
+    ("OTHER", "Other"),
+]
+
 
 class Contact(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -46,7 +50,8 @@ class PhoneNumber(models.Model):
     contact = models.ForeignKey(
         Contact, on_delete=models.CASCADE, null=True, related_name="phone_contact_set"
     )
-    PLATFORMS = [("TEXT_CALL", "Text/Call"), ("WHATSAPP", "Text/WhatsApp/Call")]
+    PLATFORMS = [("TEXT_CALL", "Text/Call"),
+                 ("WHATSAPP", "Text/WhatsApp/Call")]
     platforms = models.CharField(
         max_length=9, choices=PLATFORMS, null=True, default="TEXT/CALL"
     )
@@ -60,28 +65,28 @@ class PhoneNumber(models.Model):
 
 class Scholarship(models.Model):
     name = models.CharField(max_length=150)
-    additional_details = models.TextField(default="",blank=True)
-    #New Fields for Description
-    number_of_awards = models.CharField(max_length=80, default="",blank=True)
+    additional_details = models.TextField(default="", blank=True)
+    # New Fields for Description
+    number_of_awards = models.CharField(max_length=80, default="", blank=True)
     value = models.CharField(max_length=50, default="", blank=True)
     max_tenure = models.CharField(max_length=255, default="", blank=True)
-    eligibility = models.TextField(default="",blank=True)
-    #New Fields for Details
-    criteria = models.TextField(default="",blank=True)
-    method_of_selection = models.TextField(default="",blank=True)
-    special_requirements = models.TextField(default="",blank=True)
-    condition = models.TextField(default="",blank=True)
+    eligibility = models.TextField(default="", blank=True)
+    # New Fields for Details
+    criteria = models.TextField(default="", blank=True)
+    method_of_selection = models.TextField(default="", blank=True)
+    special_requirements = models.TextField(default="", blank=True)
+    condition = models.TextField(default="", blank=True)
 
     def __str__(self):
         return self.name
 
 
 class Event(models.Model):
-    name = models.CharField(max_length = 150)
+    name = models.CharField(max_length=150)
     start_date_time = models.DateTimeField()
     end_date_time = models.DateTimeField()
-    location = models.CharField(max_length = 150)
-    poster_image = models.ImageField(null = True, blank = True)
+    location = models.CharField(max_length=150)
+    poster_image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -91,25 +96,33 @@ class NewsFeed(models.Model):
     title = models.TextField(default="")
     date = models.DateField()
     story = models.TextField(default="")
+    important = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
 
+class NewsFeedImage(models.Model):
+    newsfeed = models.ForeignKey(
+        NewsFeed, on_delete=models.CASCADE, related_name='images')
+    image = models.FileField(
+        upload_to="../images/news_feed_images/", null=True, blank=True)
+
+
 class GeoJSONFeature(models.Model):
-    title = models.CharField(default='',max_length=50,unique=True)
-    code = models.CharField(default='',max_length=50,unique=True)
-    alt_name = models.CharField(default='',max_length=50, blank=True)
+    title = models.CharField(default='', max_length=50, unique=True)
+    code = models.CharField(default='', max_length=50, unique=True)
+    alt_name = models.CharField(default='', max_length=50, blank=True)
     GEO_JSON_TYPES = [("Feature", "Feature")]
     geo_json_type = models.CharField(
         default="Feature", max_length=7, choices=GEO_JSON_TYPES
     )
-    
-    associated_with = models.CharField(default="OTHER", max_length=7, choices=DEPARTMENT)
-    
+
+    associated_with = models.CharField(
+        default="OTHER", max_length=7, choices=DEPARTMENT)
 
     def __str__(self):
-        return self.geo_json_type.__str__() + ' '+self.title+'/'+ self.alt_name+' '+ self.geometry.__str__()
+        return self.geo_json_type.__str__() + ' '+self.title+'/' + self.alt_name+' ' + self.geometry.__str__()
 
 
 class GeometryObject(models.Model):
@@ -128,7 +141,7 @@ class GeometryObject(models.Model):
     )
 
     def __str__(self):
-        string = "with geometry of type: "+ self.geometry_type.__str__() 
+        string = "with geometry of type: " + self.geometry_type.__str__()
         return string
 
 
@@ -139,11 +152,12 @@ class Position(models.Model):
         GeometryObject, on_delete=models.CASCADE, related_name="coordinates"
     )
     MARKER_TYPES = [
-        ('START','start'),
+        ('START', 'start'),
         ('END', 'end'),
         ('NONE', 'none')
     ]
-    marker = models.CharField(max_length=5, default='NONE', choices=MARKER_TYPES)
+    marker = models.CharField(
+        max_length=5, default='NONE', choices=MARKER_TYPES)
 
     def __str__(self):
         return (
@@ -154,4 +168,3 @@ class Position(models.Model):
             + self.latitude.__str__()
             + "]"
         )
-
